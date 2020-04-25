@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scoped CSS Variables and JS</title>
+</head>
+<body>
+  <h2>Update CSS Variables with <span class='hl'>JS</span></h2>
+
+  <div class="controls">
+    <label for="spacing">Spacing:</label>
+    <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+
+    <label for="blur">Blur:</label>
+    <input id="blur" type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
+
+    <label for="base">Base Color</label>
+    <input id="base" type="color" name="base" value="#ffc600">
+  </div>
+
+  <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
+
+  <style>
+
+    :root {
+      --base: #ffc600;
+      --spacing: 10px;
+      --blur: 10px;
+    }
+
+    img {
+      background-color: var(--base);
+      padding: var(--spacing);
+      filter: blur(var(--blur));
+    }
+
+    .hl {
+      color: var(--base);
+    }
+
+    /*
+      misc styles, nothing to do with CSS variables
+    */
+
+    body {
+      text-align: center;
+      background: #193549;
+      color: white;
+      font-family: 'helvetica neue', sans-serif;
+      font-weight: 100;
+      font-size: 50px;
+    }
+
+    .controls {
+      margin-bottom: 50px;
+    }
+
+    input {
+      width: 100px;
+    }
+  </style>
+
+  <script>
+
+    //now to connect the CSS variables to the input fields.
+
+    const inputs = document.querySelectorAll(".controls input");
+
+    function handleUpdate() {
+      //console.log(this.value);//we get the value of input each time it changes.
+      //console.log(this.dataset);//will give us a DOMStringMap of all the custom data attributes.
+      const suffix = this .dataset.sizing || "";
+      // console.log(this.name);
+
+      //now to select the CSS variables we use document.documentElement.style as it selects the document as a whole i.e. the root and then we change the variables.
+      document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+    }
+    
+    inputs.forEach(input => input.addEventListener("change", handleUpdate));
+    //the above it required cuz of the color as it doesn't require mouse to move over it when changing as a color palate opens where the selection happens.
+    // but now it triggers only when it changes completely i.e. mouse is off.
+
+    //Hence to fix this we will set a mousemove event listener
+    //Now the function will be triggered every time mouse moves over the input area.
+    // to make this better we could make it so that it triggers only when mousedown event is on.
+    // this will make it so that the program doesn't have to keep a track of every unnecessary mouse hovers over it.   
+    inputs.forEach(input => input.addEventListener("mousedown", ()=> {
+      inputs.forEach(input => input.addEventListener("mousemove", handleUpdate));
+    }));
+    
+
+  </script>
+
+</body>
+</html>
